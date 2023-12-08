@@ -31,9 +31,18 @@ foreach ($images as $image) {
         $text = '';
     }
    
-    echo "Image: $imageId\n";
-    echo "Extracted Text: <strong>$text</strong>";
-    echo "<br>";
+    echo "<div>";
+    echo "<img src='$image' alt='Image $imageId'><br>";
+    echo "Image ID: $imageId<br>";
+    echo "Extracted Text: <span class='extracted-text'>$text</span><br>";
+
+    // Add an input field for the user to enter the new text
+    echo "<input type='text' class='new-text' placeholder='Enter new text'><br>";
+
+    // Add a button for manual rename for each image with a unique identifier
+    echo "<button class='rename-btn' data-image-id='$imageId'>Manual Rename for Image $imageId</button>";
+    
+    echo "</div><br>";
 
     // Search for text in questions
     $matchFound = false;
@@ -61,3 +70,27 @@ foreach ($images as $image) {
 }
 
 $conn->close();
+?>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+    $('.rename-btn').click(function() {
+        var imageId = $(this).data('image-id');
+        var newText = $(this).closest('div').find('.new-text').val();
+        $.ajax({
+            url: 'rename_image.php',
+            type: 'POST',
+            data: { image_id: imageId, new_text: newText },
+            success: function(response) {
+                // Handle success response (if any)
+                console.log('Image ' + imageId + ' renamed successfully to ' + newText);
+                // Optionally handle the response to update the UI
+            },
+            error: function(xhr, status, error) {
+                // Handle error
+                console.error(error);
+            }
+        });
+    });
+});
+</script>
